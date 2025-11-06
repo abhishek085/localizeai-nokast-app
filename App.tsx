@@ -5,7 +5,8 @@ import { DashboardScreen } from './components/DashboardScreen';
 import { ModelManagementScreen } from './components/ModelManagementScreen';
 import { SettingsScreen } from './components/SettingsScreen';
 import { AboutScreen } from './components/AboutScreen';
-import { MOCK_NEWSLETTERS, MOCK_SUMMARY } from './constants';
+import { AIHelperBubble } from './components/AIHelperBubble';
+import { MOCK_SUMMARY } from './constants';
 import { summarizeNewsletters } from './services/geminiService';
 import { Screen, SummaryPreferences, Newsletter } from './types';
 import { Spinner } from './components/Spinner';
@@ -39,7 +40,7 @@ const App: React.FC = () => {
 
     const handleGenerateSummary = async () => {
         if (selectedNewsletters.length === 0) {
-            alert("Please select some newsletters in Settings first.");
+            alert("Please add some newsletters in Settings first.");
             return;
         }
         setIsGenerating(true);
@@ -103,6 +104,7 @@ const App: React.FC = () => {
                           setIsGmailConnected(false);
                           setSelectedNewsletters([]);
                         }}
+                        selectedNewsletters={selectedNewsletters}
                         onSaveNewsletters={setSelectedNewsletters}
                     />
                 );
@@ -120,10 +122,11 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-gray-50 text-gray-800 font-sans">
+        <div className="flex flex-col h-screen bg-slate-50 text-gray-800 font-sans">
             <Header activeScreen={activeScreen} setScreen={setActiveScreen} isOnline={isOnline} />
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-y-auto relative">
                 {renderScreen()}
+                <AIHelperBubble isModelLoaded={isModelLoaded} summary={summary ?? ''} />
             </main>
         </div>
     );

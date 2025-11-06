@@ -22,11 +22,19 @@ const StatusIndicator: React.FC<{ status: ModelStatus }> = ({ status }) => {
 export const ModelManagementScreen: React.FC = () => {
     const [models, setModels] = useState<LocalModel[]>(MOCK_MODELS);
 
-    const handleToggleActive = (id: string) => {
+    const handleActivate = (id: string) => {
         setModels(models.map(model => 
             model.id === id 
             ? { ...model, isActive: true, status: ModelStatus.Running } 
             : { ...model, isActive: false, status: model.status === ModelStatus.Running ? ModelStatus.Idle : model.status }
+        ));
+    };
+
+    const handleDeactivate = (id: string) => {
+        setModels(models.map(model => 
+            model.id === id 
+            ? { ...model, isActive: false, status: ModelStatus.Idle } 
+            : model
         ));
     };
 
@@ -37,7 +45,7 @@ export const ModelManagementScreen: React.FC = () => {
 
             <div className="space-y-4">
                 {models.map(model => (
-                    <div key={model.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <div key={model.id} className="flex items-center justify-between p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
                         <div className="flex-1">
                             <h3 className="font-semibold text-gray-800">{model.name}</h3>
                             <div className="flex items-center space-x-4">
@@ -48,12 +56,10 @@ export const ModelManagementScreen: React.FC = () => {
                         <div className="flex items-center space-x-4">
                             {model.status === ModelStatus.NotDownloaded ? (
                                 <Button variant="secondary">Download</Button>
+                            ) : model.isActive ? (
+                                <Button variant="secondary" onClick={() => handleDeactivate(model.id)}>Deactivate</Button>
                             ) : (
-                                model.isActive ? (
-                                    <span className="text-sm font-medium text-green-600 px-3">Active</span>
-                                ) : (
-                                    <Button variant="secondary" onClick={() => handleToggleActive(model.id)}>Activate</Button>
-                                )
+                                <Button variant="primary" onClick={() => handleActivate(model.id)}>Activate</Button>
                             )}
                         </div>
                     </div>
