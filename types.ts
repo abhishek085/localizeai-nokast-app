@@ -33,3 +33,17 @@ export enum Screen {
   Settings = 'Settings',
   About = 'About',
 }
+
+export interface Story {
+  id: string;
+  title: string;
+  summary: string;
+  linkedIn: string;
+  x_post: string;
+  branding_tag: string;
+  action_suggestion: string;
+  score: number;
+  date_iso: string;
+  sender_email: string;
+  processed_at: string;
+}

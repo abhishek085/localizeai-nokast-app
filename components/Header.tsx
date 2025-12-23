@@ -8,9 +8,11 @@ interface HeaderProps {
 }
 
 const AppLogo: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor">
-        <path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15v1a1 1 0 001 1h12a1 1 0 001-1v-1a1 1 0 00-.293-.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-    </svg>
+    <img src="/logo.png" alt="Nokast Logo" className={className} onError={(e) => {
+        // Fallback to SVG if image fails to load
+        e.currentTarget.style.display = 'none';
+        e.currentTarget.parentElement?.insertAdjacentHTML('afterbegin', '<svg xmlns="http://www.w3.org/2000/svg" class="' + className + '" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15v1a1 1 0 001 1h12a1 1 0 001-1v-1a1 1 0 00-.293-.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" /></svg>');
+    }} />
 );
 
 const NavItem: React.FC<{
@@ -58,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ activeScreen, setScreen, isOnlin
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
                 <AppLogo className="h-7 w-7 text-blue-600" />
-                <h1 className="text-lg font-bold text-gray-800">LocalizeAI</h1>
+                <h1 className="text-lg font-bold text-gray-800">Nokast</h1>
             </div>
             <nav className="hidden md:flex items-center space-x-2">
               {screens.map(({screen, label}) => (

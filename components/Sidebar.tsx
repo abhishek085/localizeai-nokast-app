@@ -7,9 +7,10 @@ interface SidebarProps {
 }
 
 const AppLogo: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor">
-        <path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15v1a1 1 0 001 1h12a1 1 0 001-1v-1a1 1 0 00-.293-.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-    </svg>
+    <img src="/logo.png" alt="Nokast Logo" className={className} onError={(e) => {
+        e.currentTarget.style.display = 'none';
+        e.currentTarget.parentElement?.insertAdjacentHTML('afterbegin', '<svg xmlns="http://www.w3.org/2000/svg" class="' + className + '" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15v1a1 1 0 001 1h12a1 1 0 001-1v-1a1 1 0 00-.293-.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" /></svg>');
+    }} />
 );
 
 const NavItem: React.FC<{
@@ -43,7 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeScreen, setScreen }) => 
     <aside className="w-64 bg-gray-100/80 border-r border-gray-200 p-4 flex flex-col flex-shrink-0">
       <div className="flex items-center space-x-2 mb-8 px-2">
         <AppLogo className="h-7 w-7 text-blue-600" />
-        <h1 className="text-base font-bold text-gray-800">LocalizeAI by Nokast</h1>
+        <h1 className="text-base font-bold text-gray-800">Nokast</h1>
       </div>
       <nav className="flex flex-col space-y-2">
         <NavItem 

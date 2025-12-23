@@ -2,9 +2,10 @@ import React from 'react';
 import { Button } from './Button';
 
 const AppLogo: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 20 20" fill="currentColor">
-        <path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15v1a1 1 0 001 1h12a1 1 0 001-1v-1a1 1 0 00-.293-.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-    </svg>
+    <img src="/logo.png" alt="Nokast Logo" className={className} onError={(e) => {
+        e.currentTarget.style.display = 'none';
+        e.currentTarget.parentElement?.insertAdjacentHTML('afterbegin', '<svg xmlns="http://www.w3.org/2000/svg" class="' + className + '" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a6 6 0 00-6 6v3.586l-1.707 1.707A1 1 0 003 15v1a1 1 0 001 1h12a1 1 0 001-1v-1a1 1 0 00-.293-.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" /></svg>');
+    }} />
 );
 
 const BulletPoint: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -25,7 +26,7 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onConnect }) => {
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-50">
       <div className="max-w-lg w-full bg-white p-10 rounded-2xl shadow-lg border border-gray-200 text-center">
         <AppLogo className="h-16 w-16 mx-auto text-blue-600 mb-4" />
-        <h1 className="text-3xl font-bold mb-2 text-gray-900">Local Summarizer</h1>
+        <h1 className="text-3xl font-bold mb-2 text-gray-900">Nokast</h1>
         <p className="text-lg text-gray-500 mb-8">
           Your personal newsletter summarizer that puts privacy first.
         </p>

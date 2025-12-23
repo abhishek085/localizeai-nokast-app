@@ -1,5 +1,5 @@
 {
-  "name": "LocalizeAI by Nokast",
+  "name": "Nokast",
   "description": "An open-source, locally running app to summarize your Gmail newsletters. Connect your account, select and prioritize newsletters, and get AI-powered summaries without your data ever leaving your device.",
   "requestFramePermissions": []
 }

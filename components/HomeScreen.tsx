@@ -1,10 +1,10 @@
 import React from 'react';
-import { Newsletter, Screen } from '../types';
+import { Newsletter, Screen, Story } from '../types';
 import { Button } from './Button';
 
 interface HomeScreenProps {
     isGmailConnected: boolean;
-    summary: string | null;
+    stories: Story[];
     selectedNewsletters: Newsletter[];
     onNavigate: (screen: Screen) => void;
     onGenerate: () => void;
@@ -45,15 +45,17 @@ const ActionsIcon = () => (
     </div>
 );
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ isGmailConnected, summary, selectedNewsletters, onNavigate, onGenerate }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ isGmailConnected, stories, selectedNewsletters, onNavigate, onGenerate }) => {
     
-    const summaryPreview = summary ? summary.substring(0, 200) + '...' : 'No summary generated for this session.';
+    const summaryPreview = stories.length > 0 
+        ? stories[0].title + ": " + stories[0].summary.substring(0, 150) + '...' 
+        : 'No summary generated for this session.';
 
     return (
         <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
             <div className="mb-8">
                 <h2 className="text-3xl font-bold text-gray-900">Home</h2>
-                <p className="text-gray-500">Your personal status page for LocalizeAI.</p>
+                <p className="text-gray-500">Your personal status page for Nokast.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -79,7 +81,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ isGmailConnected, summar
                 <div className="lg:col-span-2 bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
                     <h3 className="text-xl font-bold text-gray-900 mb-4">Latest Summary Preview</h3>
                     <p className="text-gray-600 whitespace-pre-wrap">{summaryPreview}</p>
-                    {summary && (
+                    {stories.length > 0 && (
                          <Button className="mt-6" onClick={() => onNavigate(Screen.Dashboard)}>View Full Summary & AI Helper</Button>
                     )}
                 </div>
