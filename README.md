@@ -1,8 +1,11 @@
-<div align="center">
+<div class="center">
 <img width="200" alt="Nokast Logo" src="/logo.png" />
 <h1>LocalizeAI by Nokast</h1>
 <p>Automate fetching newsletters from Gmail, cleaning and extracting stories using a local Ollama model, and saving curated results to a local DuckDB database.</p>
 </div>
+<p>
+    <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
+</p>
 
 ## Features
 
@@ -105,3 +108,11 @@ All data is stored locally in `backend/top_news.duckdb`. This includes:
 - **Processed Stories**: The final curated results.
 
 The database is shared between the FastAPI server and the background pipeline using DuckDB's multi-process support (read-only mode for the pipeline).
+
+## License
+
+This project is released under the MIT License — see the `LICENSE` file for details.
+
+## Community
+
+© 2025 Nokast. This repository is the first repository for the Nokast open-source community. You're welcome to fork, provide comments and suggestions, and build something of your own on top of this project. Contributions, issues and pull requests are highly appreciated — help shape Nokast's future!
