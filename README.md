@@ -1,5 +1,5 @@
 <div class="center">
-<img width="200" alt="Nokast Logo" src="/logo.png" />
+<img width="200" alt="Nokast Logo" src="public/logo.png" />
 <h1>LocalizeAI by Nokast</h1>
 <p>Automate fetching newsletters from Gmail, cleaning and extracting stories using a local Ollama model, and saving curated results to a local DuckDB database.</p>
 </div>
