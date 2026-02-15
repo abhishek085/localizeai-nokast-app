@@ -40,8 +40,44 @@ class WhatsAppService:
         # Handle !nokast command if needed
         text = evt.Message.conversation or ""
         if "!nokast" in text:
-            logger.info(f"Trigger Nokast job from {evt.Info.Sender}")
-            sender_jid = evt.Info.Sender.String()
+            # Safely extract sender JID which can vary by neonize version or chat type
+            # 1. Try common top-level fields
+            sender = getattr(evt.Info, "Sender", getattr(evt.Info, "sender", None))
+            if not sender:
+                sender = getattr(evt.Info, "Chat", getattr(evt.Info, "chat", None))
+            
+            # 2. Try MessageSource (attribute found in your logs)
+            if not sender and hasattr(evt.Info, "MessageSource"):
+                src = evt.Info.MessageSource
+                # Inside MessageSource, look for Sender or Chat
+                sender = getattr(src, "Sender", getattr(src, "sender", None))
+                if not sender:
+                    sender = getattr(src, "Chat", getattr(src, "chat", None))
+            
+            # 3. Try nested Source if still not found
+            if not sender and hasattr(evt.Info, "Source"):
+                sender = getattr(evt.Info.Source, "Sender", getattr(evt.Info.Source, "sender", None))
+            
+            if not sender:
+                logger.error("Could not determine sender. Falling back to configured WHATSAPP_PHONE from .env")
+                sender_jid = os.getenv("WHATSAPP_PHONE")
+                if not sender_jid:
+                    return
+            else:
+                # Get the phone number part accurately to avoid grabbing metadata zeros
+                if hasattr(sender, "User"):
+                    sender_jid = sender.User
+                elif hasattr(sender, "String"):
+                    sender_jid = sender.String().split("@")[0]
+                else:
+                    sender_jid = str(sender).split("@")[0]
+
+            logger.info(f"Trigger Nokast job from {sender_jid}")
+            
+            if self.on_nokast_callback:
+                self.on_nokast_callback(sender_jid)
+            self.send_notification(sender_jid, "🚀 Starting Nokast job...")
+            
             if self.on_nokast_callback:
                 self.on_nokast_callback(sender_jid)
             self.send_notification(sender_jid, "🚀 Starting Nokast job...")
