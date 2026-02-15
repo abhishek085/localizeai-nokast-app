@@ -4,11 +4,16 @@ This backend handles Gmail fetching, Ollama model orchestration, and DuckDB stor
 
 ## Setup
 
-1. **Install `uv`** (recommended):
+1. **Install system dependencies**:
+   - `libmagic` is required for WhatsApp integration.
+   - **macOS**: `brew install libmagic`
+   - **Linux**: `sudo apt-get install libmagic1`
+
+2. **Install `uv`** (recommended):
    ```bash
    curl -LsSf https://astral.sh/uv/install.sh | sh
    ```
-2. **Sync dependencies**:
+3. **Sync dependencies**:
    ```bash
    uv venv
    source .venv/bin/activate

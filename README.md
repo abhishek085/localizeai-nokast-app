@@ -15,6 +15,7 @@
 - **DuckDB Persistence**: All your data (newsletters, keywords, stories) stays on your machine.
 - **Real-time Monitoring**: Background pipeline status polling every 8 seconds.
 - **Curated Dashboard**: View individual story cards with LinkedIn/X post drafts and newsletter source info.
+- **WhatsApp Integration**: Receive curated summaries directly on your phone and trigger jobs via WhatsApp commands.
 
 ## Prerequisites
 
@@ -22,6 +23,9 @@
 - **Python** (v3.12+)
 - **Ollama** (installed and running)
 - **Google Cloud Project** (for Gmail API access)
+- **libmagic**: Required for WhatsApp QR generation and file handling.
+  - **macOS**: `brew install libmagic`
+  - **Linux (Debian/Ubuntu)**: `sudo apt-get install libmagic1`
 
 ## Setup Instructions
 
@@ -90,6 +94,22 @@ This app uses Ollama for local processing.
 1. Download Ollama from [ollama.com](https://ollama.com).
 2. Ensure it is running (`ollama serve`).
 3. Go to the **Model Management** tab in the app to download and activate models like `llama3.2:1b` or `phi3:mini`.
+
+## WhatsApp Integration (Beta)
+
+Nokast supports sending your latest reports via WhatsApp and remote command triggers.
+
+### Setup WhatsApp:
+1. Ensure `libmagic` is installed (see Prerequisites).
+2. In the app, go to **Settings** and look for the **WhatsApp Connection** section.
+3. Enter your phone number (including country code, e.g., `19725896885`).
+4. Click **Connect WhatsApp**. A QR code will appear.
+5. Scan the QR code with your WhatsApp mobile app (Linked Devices).
+
+### Features:
+- **Auto-Reports**: Once connected, the pipeline will automatically send the top 5 stories to your phone after each run.
+- **Manual Trigger**: Use the **WhatsApp** button on the Dashboard to send the latest stories on demand.
+- **Remote Control**: Send `!nokast` to your own number on WhatsApp to trigger a fresh newsletter pipeline run remotely.
 
 ## Configuration & Database
 

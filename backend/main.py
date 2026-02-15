@@ -12,6 +12,7 @@ from typing import Any
 import uuid
 import subprocess
 import json as _json
+from whatsapp_service import whatsapp_service
 
 # Import user's pipeline
 try:
@@ -49,6 +50,13 @@ def resolve_db_path():
     return os.path.join(BASE_DIR, val)
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_event():
+    # Auto-start WhatsApp if enabled
+    if os.getenv("WHATSAPP_ENABLED", "false").lower() == "true":
+        print("[info] Auto-starting WhatsApp service...")
+        whatsapp_service.start()
 
 # Serve static frontend if built
 if os.path.isdir(FRONTEND_DIST):
@@ -385,7 +393,47 @@ async def post_priority_keywords(payload: dict):
         con.close()
 
 
-def run_pipeline_job(newsletters: list, fetch_limit: int | None):
+@app.get('/api/whatsapp/status')
+async def whatsapp_status():
+    return {"ok": True, "status": whatsapp_service.get_status()}
+
+
+@app.post('/api/whatsapp/connect')
+async def whatsapp_connect():
+    # Set enabled in .env
+    env_path = os.path.join(SECRETS_DIR, '.env')
+    existing = {}
+    if os.path.exists(env_path):
+        with open(env_path, 'r') as f:
+            for line in f:
+                if '=' in line and not line.startswith('#'):
+                    k, v = line.strip().split('=', 1)
+                    existing[k] = v
+    
+    existing["WHATSAPP_ENABLED"] = "true"
+    with open(env_path, 'w') as f:
+        for k, v in existing.items():
+            f.write(f"{k}={v}\n")
+    
+    whatsapp_service.start()
+    return {"ok": True, "message": "WhatsApp service starting..."}
+
+
+def format_stories_for_whatsapp(stories: list):
+    if not stories:
+        return "No new stories found today."
+    
+    msg = "*🚀 Nokast Top Stories*\n\n"
+    for i, s in enumerate(stories[:5]):  # Send top 5 to keep message length manageable
+        title = s.get('title', 'No Title')
+        summary = s.get('summary', '')
+        msg += f"*{i+1}. {title}*\n{summary}\n\n"
+    
+    msg += "Check the dashboard for more details!"
+    return msg
+
+
+def run_pipeline_job(newsletters: list, fetch_limit: int | None, notify_phone: str | None = None):
     global _last_run
     try:
         _last_run = {"running": True, "last_result": None}
@@ -393,8 +441,15 @@ def run_pipeline_job(newsletters: list, fetch_limit: int | None):
         if p is None:
             _last_run = {"running": False, "last_result": "pipeline_not_available"}
             return
-        result = p.run(fetch_limit=fetch_limit or None)
+        stories = p.run(fetch_limit=fetch_limit or None)
         _last_run = {"running": False, "last_result": "ok"}
+        
+        # WhatsApp Notification
+        whatsapp_phone = notify_phone or os.getenv("WHATSAPP_PHONE")
+        if whatsapp_phone and whatsapp_service.is_connected:
+            formatted_msg = format_stories_for_whatsapp(stories)
+            whatsapp_service.send_notification(whatsapp_phone, formatted_msg)
+
     except Exception as e:
         _last_run = {"running": False, "last_result": f"error: {e}"}
 
@@ -412,6 +467,14 @@ async def run(req: RunRequest, background_tasks: BackgroundTasks):
     return {"ok": True, "message": "pipeline_started"}
 
 
+# Set up WhatsApp callback
+def trigger_nokast_via_whatsapp(phone: str = None):
+    # Run in background to avoid blocking WhatsApp client thread
+    threading.Thread(target=run_pipeline_job, args=([], None, phone)).start()
+
+whatsapp_service.on_nokast_callback = trigger_nokast_via_whatsapp
+
+
 @app.get('/api/stories')
 async def stories():
     # Read from DuckDB file used by pipeline
@@ -424,6 +487,36 @@ async def stories():
         cols = [c[0] for c in con.description]
         stories = [dict(zip(cols, r)) for r in rows]
         return {"ok": True, "stories": stories}
+    finally:
+        con.close()
+
+
+@app.post('/api/whatsapp/send-latest')
+async def send_latest_to_whatsapp():
+    """Send the 5 latest stories from DuckDB to the configured WhatsApp phone."""
+    whatsapp_phone = os.getenv("WHATSAPP_PHONE")
+    if not whatsapp_phone:
+        return JSONResponse({"ok": False, "error": "WhatsApp phone not configured"}, status_code=400)
+    
+    if not whatsapp_service.is_connected:
+        return JSONResponse({"ok": False, "error": "WhatsApp service not connected"}, status_code=400)
+
+    db_path = resolve_db_path()
+    if not os.path.exists(db_path):
+        return JSONResponse({"ok": False, "error": "No stories found (database missing)"}, status_code=404)
+
+    con = duckdb.connect(db_path)
+    try:
+        rows = con.execute('SELECT title, summary FROM top_stories ORDER BY processed_at DESC LIMIT 5').fetchall()
+        if not rows:
+            return JSONResponse({"ok": False, "error": "No stories found in database"}, status_code=404)
+        
+        stories = [{"title": r[0], "summary": r[1]} for r in rows]
+        message = format_stories_for_whatsapp(stories)
+        whatsapp_service.send_notification(whatsapp_phone, message)
+        return {"ok": True, "message": f"Latest reports sent to {whatsapp_phone}"}
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": str(e)}, status_code=500)
     finally:
         con.close()
 

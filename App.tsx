@@ -223,6 +223,20 @@ const App: React.FC = () => {
         }
     };
 
+    const handleSendWhatsApp = async () => {
+        try {
+            const resp = await fetch('/api/whatsapp/send-latest', { method: 'POST' });
+            const data = await resp.json();
+            if (resp.ok) {
+                alert(data.message || "Reports sent to WhatsApp!");
+            } else {
+                alert("Error: " + (data.error || "Failed to send to WhatsApp"));
+            }
+        } catch (e) {
+            alert("Network error: " + (e as Error).message);
+        }
+    };
+
     const renderScreen = () => {
         if (isGenerating) {
             return (
@@ -249,6 +263,7 @@ const App: React.FC = () => {
                             onLoadModel={() => setIsModelLoaded(true)}
                             onGenerate={handleGenerateSummary}
                             onExport={handleExport}
+                            onSendWhatsApp={handleSendWhatsApp}
                         />;
             case Screen.ModelManagement:
                 return <ModelManagementScreen />;

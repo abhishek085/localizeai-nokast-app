@@ -8,9 +8,10 @@ interface DashboardScreenProps {
   onLoadModel: () => void;
   onGenerate: () => void;
   onExport: () => void;
+  onSendWhatsApp?: () => void;
 }
 
-export const DashboardScreen: React.FC<DashboardScreenProps> = ({ stories, isModelLoaded, onLoadModel, onGenerate, onExport }) => {
+export const DashboardScreen: React.FC<DashboardScreenProps> = ({ stories, isModelLoaded, onLoadModel, onGenerate, onExport, onSendWhatsApp }) => {
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -49,11 +50,27 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ stories, isMod
                         onClick={onGenerate} 
                         variant={isModelLoaded ? "secondary" : "ghost"} 
                         disabled={!isModelLoaded}
-                        className={!isModelLoaded ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400" : ""}
+                        className={!isModelLoaded ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400" : "flex items-center gap-2"}
                     >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
                         {isModelLoaded ? 'Regenerate' : 'Regenerate (Disabled)'}
                     </Button>
-                    <Button onClick={onExport}>Export All</Button>
+                    {stories.length > 0 && onSendWhatsApp && (
+                        <Button onClick={onSendWhatsApp} variant="secondary" className="!bg-emerald-50 !text-emerald-700 !border-emerald-200 hover:!bg-emerald-100 flex items-center gap-2">
+                            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .018 5.396.015 12.03c0 2.12.553 4.189 1.606 6.006L0 24l6.135-1.61a11.811 11.811 0 005.912 1.569h.005c6.636 0 12.032-5.396 12.035-12.031a11.77 11.77 0 00-3.522-8.497" />
+                            </svg>
+                            WhatsApp
+                        </Button>
+                    )}
+                    <Button onClick={onExport} className="flex items-center gap-2">
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        Copy Text
+                    </Button>
                 </div>
             </div>
 

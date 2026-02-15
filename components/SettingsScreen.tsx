@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './Button';
 import { Toggle } from './Toggle';
+import { WhatsAppConnect } from './WhatsAppConnect';
 import { SummaryPreferences, Newsletter } from '../types';
 
 interface SettingsScreenProps {
@@ -272,6 +273,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ initialPrefs, on
             </div>
         )}
       </div>
+
+      {/* WhatsApp Connection */}
+      <WhatsAppConnect />
 
       {/* Newsletter Management */}
       {isGmailConnected && (
